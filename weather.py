@@ -187,5 +187,6 @@ if __name__ == "__main__":
     if cities_not_found:
         print("\n")
         print("Sorry, we could not find weather data for the following cities: ")
-        print(", ".join(cities_not_found))
+        not_found_table = tabulate([[city] for city in cities_not_found], headers=["City Not Found"], tablefmt="grid")
+        print(not_found_table)
         print("Try checking for any spelling error. Thanks!")
