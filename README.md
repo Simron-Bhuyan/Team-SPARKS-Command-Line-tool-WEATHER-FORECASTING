@@ -49,3 +49,6 @@ We'll enter a few cities, and the tool will fetch and display the weather inform
 The Weather Information Tool is a helpful utility for checking weather and temperature information.
 It offers command-line interactivity, flexibility with units, and a user-friendly display.
 You can explore and customize the code to suit your specific needs.
+
+**Future Scope**
+1. Implementing more features like weather conditions like moisture content and more.
