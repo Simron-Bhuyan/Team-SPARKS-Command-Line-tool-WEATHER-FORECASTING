@@ -26,3 +26,26 @@ The URL is formatted with the city name, units, and API key.
 The get_weather_data() function makes an API request to the OpenWeather API using the constructed URL.
 It handles potential HTTP errors, such as unauthorized access or city not found.
 The response data is returned as a Python dictionary.
+
+**Displaying Weather Information**
+
+The display_weather_info() function formats the retrieved weather data.
+It extracts relevant information like city name, weather condition ID, description, and temperature.
+The weather condition ID is mapped to an appropriate weather symbol and display color.
+
+**Tabulating the Data**
+
+The code utilizes the tabulate function to create a table from the formatted weather data.
+Headers for the table include City, Weather, Description, and Temperature.
+The table is printed to the console, providing a clear overview of the weather information for each city.
+
+**Demo**
+
+Let's see a demo of the Weather Information Tool in action.
+We'll enter a few cities, and the tool will fetch and display the weather information for each city.
+
+**Conclusion**
+
+The Weather Information Tool is a helpful utility for checking weather and temperature information.
+It offers command-line interactivity, flexibility with units, and a user-friendly display.
+You can explore and customize the code to suit your specific needs.
