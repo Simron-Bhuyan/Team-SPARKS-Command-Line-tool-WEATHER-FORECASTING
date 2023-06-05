@@ -5,6 +5,7 @@ from configparser import ConfigParser
 from urllib import error, parse, request
 
 import style
+from tabulate import tabulate
 
 BASE_WEATHER_API_URL = "http://api.openweathermap.org/data/2.5/weather"
 # Weather Condition Codes
@@ -16,6 +17,8 @@ SNOW = range(600, 700)
 ATMOSPHERE = range(700, 800)
 CLEAR = range(800, 801)
 CLOUDY = range(801, 900)
+
+
 def read_user_cli_args():
     """Handles the CLI user interactions.
 
@@ -23,10 +26,12 @@ def read_user_cli_args():
         argparse.Namespace: Populated namespace object
     """
     parser = argparse.ArgumentParser(
-        description="gets weather and temperature information for a city"
+        description="gets weather and temperature information for cities"
     )
     parser.add_argument(
-        "city", nargs="+", type=str, help="enter the city name"
+        "num_cities",
+        type=int,
+        help="enter the number of cities you want to check",
     )
     parser.add_argument(
         "-i",
@@ -41,15 +46,14 @@ def build_weather_query(city_input, imperial=False):
     """Builds the URL for an API request to OpenWeather's Weather API.
 
     Args:
-        city_input (List[str]): Name of a city as collected by argparse
+        city_input (str): Name of a city
         imperial (bool): Whether or not to use imperial units for temperature
 
     Returns:
         str: URL formatted for a call to OpenWeather's city name endpoint
     """
     api_key = _get_api_key()
-    city_name = " ".join(city_input)
-    url_encoded_city_name = parse.quote_plus(city_name)
+    url_encoded_city_name = parse.quote_plus(city_input)
     units = "imperial" if imperial else "metric"
     url = (
         f"{BASE_WEATHER_API_URL}?q={url_encoded_city_name}"
@@ -105,28 +109,18 @@ def display_weather_info(weather_data, imperial=False):
         weather_data (dict): API response from OpenWeather by city name
         imperial (bool): Whether or not to use imperial units for temperature
 
-    More information at https://openweathermap.org/current#name
+    Returns:
+        str: Formatted weather information for a city
     """
     city = weather_data["name"]
     weather_id = weather_data["weather"][0]["id"]
     weather_description = weather_data["weather"][0]["description"]
     temperature = weather_data["main"]["temp"]
 
-    style.change_color(style.REVERSE)
-    print(f"{city:^{style.PADDING}}", end="")
-    style.change_color(style.RESET)
-
     weather_symbol, color = _select_weather_display_params(weather_id)
-    style.change_color(color)
 
-    print(f"\t{weather_symbol}", end=" ")
-    print(
-        f"\t{weather_description.capitalize():^{style.PADDING}}",
-        end=" ",
-    )
-    style.change_color(style.RESET)
-
-    print(f"({temperature}°{'F' if imperial else 'C'})")
+    temperature_str = f"{temperature}°{'F' if imperial else 'C'}"
+    return [city, weather_symbol, weather_description.capitalize(), temperature_str]
 
 
 def _select_weather_display_params(weather_id):
@@ -159,6 +153,21 @@ def _select_weather_display_params(weather_id):
 
 if __name__ == "__main__":
     user_args = read_user_cli_args()
-    query_url = build_weather_query(user_args.city, user_args.imperial)
-    weather_data = get_weather_data(query_url)
-    display_weather_info(weather_data, user_args.imperial)
+    cities = []
+    for _ in range(user_args.num_cities):
+        city_name = input("Enter the name of a city: ")
+        cities.append(city_name)
+
+    weather_data_list = []
+    for city in cities:
+        query_url = build_weather_query(city, user_args.imperial)
+        weather_data = get_weather_data(query_url)
+        weather_data_list.append(weather_data)
+
+    table_data = []
+    for weather_data in weather_data_list:
+        table_data.append(display_weather_info(weather_data, user_args.imperial))
+
+    headers = ["City", "Weather", "Description", "Temperature"]
+    table = tabulate(table_data, headers=headers, tablefmt="grid")
+    print(table)
