@@ -90,7 +90,7 @@ def get_weather_data(query_url):
         if http_error.code == 401:  # 401 - Unauthorized
             sys.exit("Access denied. Check your API key.")
         elif http_error.code == 404:  # 404 - Not Found
-            sys.exit("Can't find weather data for this city.")
+            return None  # Return None if weather data not found for the city
         else:
             sys.exit(f"Something went wrong... ({http_error.code})")
 
@@ -159,10 +159,14 @@ if __name__ == "__main__":
         cities.append(city_name)
 
     weather_data_list = []
+    cities_not_found = []
     for city in cities:
         query_url = build_weather_query(city, user_args.imperial)
         weather_data = get_weather_data(query_url)
-        weather_data_list.append(weather_data)
+        if weather_data:
+            weather_data_list.append(weather_data)
+        else:
+            cities_not_found.append(city)
 
     table_data = []
     for weather_data in weather_data_list:
@@ -171,12 +175,17 @@ if __name__ == "__main__":
     headers = ["City", "Weather", "Description", "Temperature"]
     table = tabulate(table_data, headers=headers, tablefmt="grid")
 
-    print("\n" )
-    
+    print("\n")
+
     style.change_color(style.REVERSE)
     print(f"Today's weather seems beautiful! Here are the results:", end="")
     style.change_color(style.RESET)
-    
-    style.change_color(style.RESET)
+
     print("\n" * 2)
     print(table)
+
+    if cities_not_found:
+        print("\n")
+        print("Sorry, we could not find weather data for the following cities: ")
+        print(", ".join(cities_not_found))
+        print("Try checking for any spelling error. Thanks!")
