@@ -170,4 +170,13 @@ if __name__ == "__main__":
 
     headers = ["City", "Weather", "Description", "Temperature"]
     table = tabulate(table_data, headers=headers, tablefmt="grid")
+
+    print("\n" )
+    
+    style.change_color(style.REVERSE)
+    print(f"Today's weather seems beautiful! Here are the results:", end="")
+    style.change_color(style.RESET)
+    
+    style.change_color(style.RESET)
+    print("\n" * 2)
     print(table)
